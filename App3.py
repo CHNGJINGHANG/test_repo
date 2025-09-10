@@ -265,6 +265,15 @@ class DataManager:
                     del member_progress[k]
             
             self.save_data()
+
+    def remove_announcement(self, role: str, title: str):
+        """Remove an announcement by title from a portal"""
+        if role in self.data.get("announcements", {}):
+            self.data["announcements"][role] = [
+                ann for ann in self.data["announcements"][role] 
+                if ann.get("title", "").strip().lower() != title.strip().lower()
+            ]
+            self.save_data()
     
     def get_progress_dataframe(self, role: str) -> pd.DataFrame:
         """Get progress as DataFrame for visualization"""
@@ -673,6 +682,25 @@ def render_aph_dashboard():
                     st.rerun()
                 else:
                     st.warning("⚠️ Please fill in title and content")
+
+            # Remove Announcement
+            st.markdown("### 🗑️ Remove Announcement")
+            all_portals = data_manager.get_all_portals()
+            portal_for_ann = st.selectbox("Select Portal", [""] + all_portals, key="remove_ann_portal")
+
+            if portal_for_ann and portal_for_ann in data_manager.data.get("announcements", {}):
+                announcements = data_manager.data["announcements"][portal_for_ann]
+                if announcements:
+                    ann_titles = [ann["title"] for ann in announcements]
+                    ann_to_remove = st.selectbox("Select Announcement to Remove", [""] + ann_titles, key="ann_to_remove")
+                    
+                    if ann_to_remove and st.button("Remove Announcement", type="secondary"):
+                        data_manager.remove_announcement(portal_for_ann, ann_to_remove)
+                        st.success(f"✅ Announcement '{ann_to_remove}' removed from {portal_for_ann}!")
+                        st.rerun()
+                else:
+                    st.info("No announcements in this portal")
+
     
     with tab6:
         render_data_analysis()
