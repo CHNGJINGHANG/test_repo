@@ -683,23 +683,24 @@ def render_aph_dashboard():
                 else:
                     st.warning("⚠️ Please fill in title and content")
 
-            # Remove Announcement
-            st.markdown("### 🗑️ Remove Announcement")
-            all_portals = data_manager.get_all_portals()
-            portal_for_ann = st.selectbox("Select Portal", [""] + all_portals, key="remove_ann_portal")
+        # Remove Announcement
+        st.markdown("### 🗑️ Remove Announcement")
+        all_portals = data_manager.get_all_portals()
+        portal_for_ann = st.selectbox("Select Portal", [""] + all_portals, key="remove_ann_portal")
 
-            if portal_for_ann and portal_for_ann in data_manager.data.get("announcements", {}):
-                announcements = data_manager.data["announcements"][portal_for_ann]
-                if announcements:
-                    ann_titles = [ann["title"] for ann in announcements]
-                    ann_to_remove = st.selectbox("Select Announcement to Remove", [""] + ann_titles, key="ann_to_remove")
-                    
-                    if ann_to_remove and st.button("Remove Announcement", type="secondary"):
-                        data_manager.remove_announcement(portal_for_ann, ann_to_remove)
-                        st.success(f"✅ Announcement '{ann_to_remove}' removed from {portal_for_ann}!")
-                        st.rerun()
-                else:
-                    st.info("No announcements in this portal")
+        if portal_for_ann and portal_for_ann in data_manager.data.get("announcements", {}):
+            announcements = data_manager.data["announcements"][portal_for_ann]
+            if announcements:
+                ann_titles = [ann["title"] for ann in announcements]
+                ann_to_remove = st.selectbox("Select Announcement to Remove", [""] + ann_titles, key="ann_to_remove")
+                
+                if ann_to_remove and st.button("Remove Announcement", type="secondary"):
+                    data_manager.remove_announcement(portal_for_ann, ann_to_remove)
+                    st.success(f"✅ Announcement '{ann_to_remove}' removed from {portal_for_ann}!")
+                    st.rerun()
+            else:
+                st.info("No announcements in this portal")
+
 
     
     with tab6:
